@@ -14,9 +14,10 @@ Steps to download and run:
 
 Once you have completed the above, you are set up and ready to begin work on the assignment.
 
-Things to remember:
+**Things to remember:**
 1. To re-run the tests, you can first wipe the DB by running `npm run wipe`. The tests assume a fresh database each time.
 2. The tests may have mistakes too, check your work manually (using Postman). If you're not sure, ask.
+3. The API documentation is located on Swagger [here](https://app.swaggerhub.com/apis/MMU-SE/Chirrup/1.0.0/#/)
 
 If you have any issues, come see me in the labs.
 
