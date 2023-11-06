@@ -57,15 +57,50 @@ const update_post = (req, res) => {
 };
 
 const delete_post = (req, res) => {
-    return res.sendStatus(500);
+    let post_id = parseInt(req.params.post_id);
+    posts.getSinglePost(post_id, (err) => {
+        if(err === 404) return res.sendStatus(404);
+        if(err) return res.sendStatus(500);
+
+        // check auth
+
+        posts.deletePost(post_id, (err) => {
+            if (err) return res.sendStatus(500);
+            return res.sendStatus(200);
+        });
+
+    });
 };
 
 const add_like = (req, res) => {
-    return res.sendStatus(500);
+    let post_id = parseInt(req.params.post_id);
+
+    posts.getSinglePost(post_id, (err) => {
+        if(err === 404) return res.sendStatus(404);
+        if(err) return res.sendStatus(500);
+
+        posts.addLike(post_id, (err) => {
+            if(err === 403) return res.sendStatus(403);
+            if (err) return res.sendStatus(500);
+            return res.sendStatus(200);
+        });
+    });
 };
 
 const remove_like = (req, res) => {
-    return res.sendStatus(500);
+    let post_id = parseInt(req.params.post_id);
+
+    posts.getSinglePost(post_id, (err) => {
+        if(err === 404) return res.sendStatus(404);
+        if(err) return res.sendStatus(500);
+
+        posts.removeLike(post_id, (err) => {
+            if(err === 403) return res.sendStatus(403);
+            if (err) return res.sendStatus(500);
+            return res.sendStatus(200);
+        });
+    });
+
 };
 
 module.exports = {

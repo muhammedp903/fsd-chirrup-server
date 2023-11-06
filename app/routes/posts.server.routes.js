@@ -1,4 +1,4 @@
-const posts = require('../controllers/post.server.controllers')
+const posts = require('../controllers/posts.server.controllers')
 
 module.exports = function (app) {
 
@@ -7,7 +7,7 @@ module.exports = function (app) {
 
     app.route("/posts/:post_id")
         .get(posts.get_post)
-        .post(posts.update_post)
+        .patch(posts.update_post)
         .delete(posts.delete_post);
 
     app.route("/posts/:post_id/like")

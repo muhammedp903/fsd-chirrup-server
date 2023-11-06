@@ -6,20 +6,20 @@ const addNewPost = (post, done) => {
 
     db.run (sql, values, function(err){
         if(err) return done(err);
-        return done(null, this.lastID)
+        return done(null, this.lastID);
     });
-}
+};
 
 const getSinglePost = (post_id, done) => {
+
     const sql = "SELECT p.post_id, p.date_published, p.text, u.user_id, u.first_name, u.last_name, u.username FROM posts p, users u WHERE p.post_id=? AND p.author_id=u.user_id";
 
-    // TODO: Fix after users implemented
     db.get(sql, [post_id], function(err, post_details){
        if(err) return done(err);
        if(!post_details) return done(404);
 
        const sql = "SELECT u.user_id, u.first_name, u.last_name, u.username FROM users u, likes l WHERE l.post_id=? AND l.user_id=u.user_id";
-       const likes = [];
+       let likes = [];
        db.each(
            sql,
            [post_id],
@@ -48,24 +48,76 @@ const getSinglePost = (post_id, done) => {
                    },
                    likes: likes
                });
-           }
+           },
        );
     });
 
-}
+};
 
 const updatePost = (post_id, new_text, done) => {
 
-    let sql = "UPDATE posts SET text = ? WHERE post_id=?";
+    const sql = "UPDATE posts SET text = ? WHERE post_id=?";
 
     db.run(sql, [new_text, post_id], (err) => {
         return done(err);
-    })
+    });
 
-}
+};
+
+const deletePost = (post_id, done) => {
+
+    const sqlPosts = "DELETE FROM posts WHERE post_id=?";
+
+    db.run(sqlPosts, [post_id], (err) => {
+        if (err) return done(err);
+
+        const sqlLikes = "DELETE FROM likes WHERE post_id=?";
+        db.run(sqlLikes, [post_id], (err) => {
+            return done(err);
+        });
+    });
+
+};
+
+const addLike = (post_id, done) => {
+
+    const checkSql = "SELECT * FROM likes WHERE post_id=? AND user_id=?";
+    const sql = "INSERT INTO likes VALUES (?,?)";
+    const values = [post_id, 1];
+
+    db.run(checkSql, values, (err, like) => {
+        if (err) return done(err);
+        if (like) return done(403);
+
+        db.run(sql, (err) => {
+            return done(err);
+        });
+    });
+
+};
+
+const removeLike = (post_id, done) => {
+
+    const checkSql = "SELECT * FROM likes WHERE post_id=? AND user_id=?";
+    const sql = "DELETE FROM likes WHERE post_id=? AND user_id=?";
+    const values = [post_id, 1];
+
+    db.run(checkSql, values, (err, like) => {
+        if (err) return done(err);
+        if (!like) return done(403);
+
+        db.run(sql, (err) => {
+            return done(err);
+        });
+    });
+
+};
 
 module.exports = {
     addNewPost: addNewPost,
     getSinglePost: getSinglePost,
     updatePost: updatePost,
+    deletePost: deletePost,
+    addLike: addLike,
+    removeLike: removeLike,
 }
