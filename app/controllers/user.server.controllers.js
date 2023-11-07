@@ -8,7 +8,7 @@ const create_user = (req, res) => {
         username: Joi.string().required(),
         password: Joi.string()
         .min(8).max(32)
-        .pattern(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&:;<>,.?\/\\~_+-=])$/) // Regex for required characters in any order
+        .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/) // Regex for required characters in any order
         .required(),
     });
 
