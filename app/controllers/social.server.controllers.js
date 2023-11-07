@@ -55,7 +55,8 @@ const unfollow_user = (req, res) => {
 };
 
 const search = (req, res) => {
-    let queryParameter = req.params.q;
+    let queryParameter = req.query.q;
+    if (!queryParameter) queryParameter = ""; // Returns all the users if no query parameter is included in the request
 
     social.searchUsers(queryParameter, (err, results) => {
         if (err) return res.sendStatus(500);
