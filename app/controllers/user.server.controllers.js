@@ -6,7 +6,10 @@ const create_user = (req, res) => {
         first_name: Joi.string().required(),
         last_name: Joi.string().required(),
         username: Joi.string().required(),
-        password: Joi.string().required(),
+        password: Joi.string()
+        .min(8).max(32)
+        .pattern(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&:;<>,.?\/\\~_+-=])$/) // Regex for required characters in any order
+        .required(),
     });
 
     const { error } = schema.validate(req.body);
