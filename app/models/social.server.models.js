@@ -2,11 +2,9 @@ const db = require("../../database");
 const postsModels = require("./posts.server.models");
 
 const getSingleUser = (user_id, done) => {
-    const sql = "SELECT user_id, first_name, last_name, username FROM users WHERE user_id=?";
-
-    getUserDetails(user_id, (err, user_details) => {
+    getUserDetails(user_id, async (err, user_details) => {
         if (err) return done(err);
-        if(!user_details) return done(404);
+        if (!user_details) return done(404);
 
         getUserFollowers(user_id, (err, followers) => {
             if (err) return done(err);
@@ -14,25 +12,36 @@ const getSingleUser = (user_id, done) => {
             getUserFollowing(user_id, (err, following) => {
                 if (err) return done(err);
 
-                // getUserPosts(user_id, (err, posts) => {
-                //     if (err) return done(err);
-                //
-                //     let user = {
-                //         user_id: user_id,
-                //         first_name: user_details.first_name,
-                //         last_name: user_details.last_name,
-                //         username: user_details.username,
-                //
-                //         followers: followers,
-                //
-                //         following: following,
-                //
-                //         posts: posts,
-                //     };
-                //
-                //     return done(err, user);
-                // });
+                getPostsList(user_id, (err, rows) => {
+                    if (err) return done(err);
+
+                    let promises = [];
+
+                    rows.forEach((row) => {
+                        promises.push(getPost(row.post_id));
+                    });
+
+                    Promise.all(promises).then((posts) => {
+                        let user = {
+                            user_id: user_id,
+                            first_name: user_details.first_name,
+                            last_name: user_details.last_name,
+                            username: user_details.username,
+
+                            followers: followers,
+
+                            following: following,
+
+                            posts: posts,
+                        };
+                        return done(null, user);
+                    })
+                        .catch((err) => {
+                            console.log(err);
+                            return done(err);
+                        });
                 });
+            });
         });
     });
 };
@@ -106,9 +115,17 @@ const getPostsList = (userId, done) => {
     });
 };
 
-// TODO:
-const getUserPosts = async function (ids) {
+const getPost = function (post_id) {
+    return new Promise((resolve, reject) => {
+        postsModels.getSinglePost(post_id, (err, post) => {
+                    if (err){
+                        console.log(err);
+                        return reject(err);
+                    }
 
+                    return resolve(post);
+        });
+    });
 };
 
 const followUser = (follow_id, id, done) => {
