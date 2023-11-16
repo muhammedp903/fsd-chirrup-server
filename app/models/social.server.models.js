@@ -37,7 +37,7 @@ const getSingleUser = (user_id, done) => {
                         return done(null, user);
                     })
                         .catch((err) => {
-                            console.log(err);
+                            // console.log(err);
                             return done(err);
                         });
                 });
@@ -119,7 +119,7 @@ const getPost = function (post_id) {
     return new Promise((resolve, reject) => {
         postsModels.getSinglePost(post_id, (err, post) => {
                     if (err){
-                        console.log(err);
+                        // console.log(err);
                         return reject(err);
                     }
 
@@ -179,5 +179,7 @@ module.exports = {
     getUserDetails,
     followUser,
     unfollowUser,
-    searchUsers
+    searchUsers,
+    getPostsList,
+    getPost
 }

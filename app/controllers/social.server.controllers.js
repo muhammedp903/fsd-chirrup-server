@@ -1,6 +1,4 @@
 const social = require("../models/social.server.models");
-const Joi = require("joi");
-const posts = require("../models/posts.server.models");
 const users = require("../models/user.server.models");
 
 const get_user = (req, res) => {

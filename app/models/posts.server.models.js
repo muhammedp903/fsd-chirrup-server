@@ -86,7 +86,7 @@ const addLike = (post_id, id, done) => {
     db.run(sql, values, (err) => {
         if (err) {
             console.log(err);
-            if (err.errno === 19) return done(403); // Constraint error (19): this post has already been liked by the user
+            if (err.errno === 19) return done(403); // SQLite Constraint error (19): this post has already been liked by the user
             return done(err);
         }
         return done(err);

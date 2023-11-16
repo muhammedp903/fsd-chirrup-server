@@ -32,7 +32,7 @@ app.get('/', (req, res, next) => {
 require('./app/routes/user.server.routes')(app);
 require('./app/routes/social.server.routes')(app);
 require('./app/routes/posts.server.routes')(app);
-// require('./app/routes/feed.server.routes')(app);
+require('./app/routes/feed.server.routes')(app);
 
 
 // Default response for any other request
