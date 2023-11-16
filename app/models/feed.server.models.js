@@ -1,4 +1,3 @@
-const users = require("./user.server.models");
 const social = require("./social.server.models");
 const db = require("../../database");
 
@@ -9,7 +8,6 @@ const getFeed = (userId, done) => {
     let postsFeed = [];
 
     if (loggedIn){
-        console.log("Logged in");
         social.getSingleUser(userId, (err, currentUser) => {
             if (err) return done(err)
             currentUser.following.forEach((user) => {
@@ -35,7 +33,6 @@ const getFeed = (userId, done) => {
                 });
         });
     } else {
-        console.log("Not logged in");
         getAllPostIds((err, rows) => {
             if (err) return done(err);
 

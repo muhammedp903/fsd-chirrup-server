@@ -1,7 +1,5 @@
-const social = require("../models/social.server.models");
 const users = require("../models/user.server.models");
 const feed = require("../models/feed.server.models");
-const e = require("express");
 
 const get_feed = (req, res) => {
     let token = req.get("X-Authorization");

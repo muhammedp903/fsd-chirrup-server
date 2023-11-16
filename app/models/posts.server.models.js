@@ -37,7 +37,7 @@ const getSinglePost = (post_id, done) => {
                    username: row.username
                })
            },
-           (err, num_rows) => {
+           (err) => {
                if(err) return done(err);
 
                return done(null, {
