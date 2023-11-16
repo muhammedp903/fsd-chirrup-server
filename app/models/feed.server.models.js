@@ -2,33 +2,49 @@ const social = require("./social.server.models");
 const db = require("../../database");
 
 const getFeed = (userId, done) => {
-    console.log(userId);
     let loggedIn = userId != null;
     let postIds = [];
     let postsFeed = [];
 
     if (loggedIn){
         social.getSingleUser(userId, (err, currentUser) => {
-            if (err) return done(err)
+            if (err) return done(err);
+
+            postsFeed = postsFeed.concat(currentUser.posts); // Add the current users posts
+
+            let userIds = [];
             currentUser.following.forEach((user) => {
-                postIds.push(user.user_id);
+                userIds.push(user.user_id); // Make a list of users that the current user follows
             });
-            postsFeed = postsFeed.concat(currentUser.posts);
 
             let promises = [];
-            postIds.forEach((postId) => {
-                promises.push(social.getPost(postId));
+            userIds.forEach((userId) => {
+                promises.push(getPostsList(userId)); // Get the post IDs of all the posts from each followed user
             });
+            Promise.all(promises).then((postsToGet) => {
+                postIds = postsToGet.flat().map((element) => element.post_id); // Flatten the list of lists and convert the json to just ids
 
-            Promise.all(promises).then((posts) => {
-                postsFeed = postsFeed.concat(posts);
-                postsFeed.sort((a, b) => {
-                    if (a.timestamp>b.timestamp) return 1;
-                    return -1;
+                let promises = [];
+                postIds.forEach((postId) => {
+                    promises.push(social.getPost(postId)); // Get each post
+                });
+
+                Promise.all(promises).then((posts) => {
+                    postsFeed = postsFeed.concat(posts);
+
+                    postsFeed.sort((a, b) => {
+                        if (a.timestamp<b.timestamp) return 1; // Sort all the posts by timestamp
+                        return -1;
+                    })
+                    return done(null, postsFeed);
                 })
-                return done(null, postsFeed);
+                    .catch((err) => {
+                        console.log(err);
+                        return done(err);
+                    });
             })
                 .catch((err) => {
+                    console.log(err);
                     return done(err);
                 });
         });
@@ -48,7 +64,7 @@ const getFeed = (userId, done) => {
             Promise.all(promises).then((posts) => {
                 postsFeed = postsFeed.concat(posts);
                 postsFeed.sort((a, b) => {
-                    if (a.timestamp>b.timestamp) return 1;
+                    if (a.timestamp<b.timestamp) return 1;
                     return -1;
                 })
                 return done(null, postsFeed);
@@ -67,6 +83,19 @@ const getAllPostIds = (done) => {
 
         return done(err, rows);
     });
+};
+
+const getPostsList = (userId) => {
+    const sql = "SELECT post_id FROM posts WHERE author_id=?";
+
+    return new Promise((resolve, reject) => {
+        db.all(sql, [userId], (err, rows) => {
+            if (err) return reject(err);
+
+            return resolve(rows);
+        });
+    });
+
 };
 
 module.exports = {
