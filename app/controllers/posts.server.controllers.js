@@ -1,6 +1,7 @@
 const posts = require("../models/posts.server.models")
 const Joi = require("joi")
 const users = require("../models/user.server.models");
+const {profanity} = require("super-profanity");
 
 const add_post = (req, res) => {
     const schema = Joi.object({
@@ -9,6 +10,13 @@ const add_post = (req, res) => {
 
     const { error } = schema.validate(req.body);
     if(error) return res.sendStatus(400);
+
+    const prof = profanity(
+        req.body.text,
+    );
+    if(prof !== false && prof.badWordLanguage === "en"){
+        return res.sendStatus(400);
+    }
 
     let post = Object.assign({}, req.body, {token:req.get("X-Authorization")});
 
@@ -51,6 +59,13 @@ const update_post = (req, res) => {
 
             const { error } = schema.validate(req.body);
             if (error) return res.sendStatus(400);
+
+            const prof = profanity(
+                req.body.text,
+            );
+            if(prof !== false && prof.badWordLanguage === "en"){
+                return res.sendStatus(400);
+            }
 
             if (post.text === req.body.text){
                 return res.sendStatus(200);
