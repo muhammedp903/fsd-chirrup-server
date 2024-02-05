@@ -1,4 +1,6 @@
-# Chirrup Starter Code
+# Second-year Full-Stack Web Development Assignment - Backend
+
+## Chirrup Starter Code
 
 **For the full-stack web development assignment 23/24**
 
